@@ -101,21 +101,10 @@ contract LiquidityProvider is IERC721Receiver {
         uint256 tokenId
     ) external view returns (uint256 amount0, uint256 amount1) {
         // Simulate the collect call
-        (bool success, bytes memory data) = address(positionManager).staticcall(
-            abi.encodeWithSelector(
-                INonfungiblePositionManager.collect.selector,
-                INonfungiblePositionManager.CollectParams({
-                    tokenId: tokenId,
-                    recipient: address(this),
-                    amount0Max: type(uint128).max,
-                    amount1Max: type(uint128).max
-                })
-            )
+        (, , , , , , , , , , amount0, amount1) = positionManager.positions(
+            tokenId
         );
 
-        require(success, "Static call failed");
-
-        (amount0, amount1) = abi.decode(data, (uint256, uint256));
         return (amount0, amount1);
     }
 
